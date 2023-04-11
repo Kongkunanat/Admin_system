@@ -1,0 +1,27 @@
+.data {
+    margin-top: 100px;
+  
+    padding: 0px 30px;
+    padding-bottom: 50px;
+  }
+.data__title {
+    font-size: 1.5rem;
+    color: #070707;
+    margin-bottom: 2rem;
+  }
+.filter__widget-wrapper {
+    display: flex;
+    align-items: center;
+    column-gap: 1.5rem;
+  }
+
+  .filter__widget-01 select,
+  .filter__widget-02 select {
+    border: none;
+    padding: 7px 20px;
+    border-radius: 50px;
+    background: var(--primary-color);
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 2rem;
+  }

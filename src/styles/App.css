@@ -1,12 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
 :root {
-  --primary-color: #183a31;
+  --primary-color: #181b3a;
   --secondary-color: #01d293;
-  --body-bg: #f1f1f6;
+  --body-bg: #0b0c28;
   --card-01-bg: linear-gradient(#ef621c, #e1424e);
   --card-02-bg: linear-gradient(#01d293, #56c57a);
   --card-03-bg: #725cff;
-  --card-04-bg: #2884ff;
+  --card-04-bg: #3e3e3e;
   --heading-color: #fff;
   --small-text-color: #808191;
   --recommend-car01-bg: #e1dfa4;
@@ -21,7 +22,7 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background: var(--body-bg);
 }
 
@@ -30,8 +31,8 @@ ul {
 }
 
 a {
-      color: #3b71ca;
-    text-decoration: underline;
+  text-decoration: none;
+  color: unset;
 }
 
 .main__layout {

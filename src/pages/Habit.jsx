@@ -5,17 +5,19 @@ import { Modal, ModalHeader,ModalBody,Row,Col} from "reactstrap";
 import Swal from 'sweetalert2'
 
 const Habit = () => {
+
   const [data, setData] = useState([]);
   const [title, setTitle] = useState("");
 
   const [newId,newSetId] = useState(0);
   
-  const [newtitle, setnewTitle] = useState(0);
-
+  const [newtitle, setnewTitle] = useState("");
 
   const [modal,setmodal] = useState(false);
   
   const [modal2,setmodal2] = useState(false);
+
+  const [selectedHabitTitle, setSelectedHabitTitle] = useState("");
   
 
 
@@ -26,52 +28,94 @@ const Habit = () => {
 
 
   const inserthabit = () => {
-    Swal.fire({
-      title: "สำเร็จ",
-      text: "เพิ่มข้อมูลสำเร็จ",
-      icon: "success",
-      confirmButtonText: "สำเร็จ",
-    });
-    Axios.post("http://localhost:3003/inserthabit", {
-      title:title,
-    }).then(()  => {
-      setData([...data, //เพื่อเก็บข้อมูลตัวเก่าไว้ด้วยถ้ามีการเพิ่มตัวใหม่เข้ามา
-    {
-      title:title,
-    },
-     ]);
-  });
+    for( let i =0;i< data.length;i++){
+      let result = data[i].habit_title.localeCompare(title);
+      if(result===0)
+      {
+        Swal.fire({
+          title: "เพิ่มข้อมูลไม่สำเร็จ",
+          text: "ข้อมูลซ้ำ",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+        });
+        setTitle("");
+        break;
+      }
+        if(i===(data.length-1)&&title!==''&&result!==0)
+        {
+          Axios.post("http://localhost:3003/inserthabit", {
+            title:title,
+          }).then(()  => {
+            Swal.fire({
+              title: "สำเร็จ",
+              text: "เพิ่มข้อมูลสำเร็จ",
+              icon: "success",
+              confirmButtonText: "ตกลง",
+            });
+            setTitle("");
+            setData([...data, //เพื่อเก็บข้อมูลตัวเก่าไว้ด้วยถ้ามีการเพิ่มตัวใหม่เข้ามา
+          {
+            title:title,
+          },
+          ]);
+        });
+        }
+        else if(i===(data.length-1) && title===''){
+          Swal.fire({
+            title: "ไม่สำเร็จ",
+            text: "เพิ่มข้อมูลไม่สำเร็จ",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+      }
   };
 
 
 const updatehabit = (id) => {
-  Swal.fire({
-    title: "สำเร็จ",
-    text: "แก้ไขข้อมูลสำเร็จ",
-    icon: "success",
-    confirmButtonText: "สำเร็จ",
-  });
-  console.log(id)
-  Axios.put("http://localhost:3003/updatehabit", {title: newtitle , id: id }).then(
-    (response) => {
-      setData(
-        data.map((val) => {
-          return val.id === id ? {
-            id: val.id,
-            title: newtitle ,
-              }
-            : val;
-        })
-      );
+  for( let i =0;i< data.length;i++){
+    let result = data[i].habit_title.localeCompare(newtitle);
+    if(result===0)
+    {
+      Swal.fire({
+        title: "แก้ไขข้อมูลไม่สำเร็จ",
+        text: "ข้อมูลซ้ำ",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+      });
+      break;
     }
-  );
+   if(i===(data.length-1)&&newtitle !== ""&&result!==0) // else
+  {
+    Swal.fire({
+      title: "สำเร็จ",
+      text: "แก้ไขข้อมูลสำเร็จ",
+      icon: "success",
+      confirmButtonText: "ตกลง",
+    });
+    Axios.put("http://localhost:3003/updatehabit", {title: newtitle , id: id })
+    setnewTitle('');
+    break;
+  }
+  else if(i===(data.length-1) && newtitle ==="" ){
+    Swal.fire({
+      title: "ไม่สำเร็จ",
+      text: "แก้ไขข้อมูลไม่สำเร็จ",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  }
 };
 
 
 
-function ClickEditData(id){
-  setmodal2(true)
-  newSetId(id)
+
+function ClickEditData(id,title){
+  setSelectedHabitTitle(title);
+  setnewTitle(title);
+  setmodal2(true);
+  newSetId(id);
 }
 
 
@@ -100,7 +144,7 @@ function ClickEditData(id){
                                          <input
                                          type="text"
                                          className='form-control'
-                                         placeholder=''
+                                         placeholder='ลักษณะวิสัย'
                                          onChange={(event) => {
                                           setTitle(event.target.value)
                                         }}                            
@@ -117,7 +161,7 @@ function ClickEditData(id){
     <div className="container-fluid">
       <div className="row">
             <h2>ลักษณะวิสัย</h2><span>
-            <button  type="button" className="btn btn-success" onClick={()=>setmodal(true)}>เพิ่ม</button></span>
+            <button  type="button" className="btn btn-success" onClick={()=>setmodal(true)}><span class="bi bi-plus">เพิ่ม</span></button></span>
       <div className="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
@@ -132,7 +176,7 @@ function ClickEditData(id){
             <tr>
               <td>{val.habit_title}</td>
          <div>    
-            <span id="boot-icon" className="btn btn-primary"  onClick={()=>{ClickEditData(val.habit_id)}}><span class="bi bi-pencil-square"></span></span>
+            <span id="boot-icon" className="btn btn-primary"  onClick={()=>{ClickEditData(val.habit_id,val.habit_title)}}><span class="bi bi-pencil-square"> แก้ไข</span></span>
             </div>
             </tr>
           </tbody>
@@ -156,10 +200,11 @@ function ClickEditData(id){
                                          <input
                                          type="text"
                                          className='form-control'
+                                         defaultValue={selectedHabitTitle}
                                          placeholder='ลักษณะวิสัย'
                                              onChange={(event) => {
                                               setnewTitle(event.target.value)
-                                        }}                            
+                                        }}                           
                                          />
                                 </div>      
                                 <button type="button" onClick={() => {updatehabit(newId)}} className="btn btn-warning"> แก้ไขข้อมูล </button>                                          
@@ -167,7 +212,7 @@ function ClickEditData(id){
                         </Row>                        
                     </form>
                </ModalBody>        
-            </Modal>
+        </Modal>
     </>
   );
 };

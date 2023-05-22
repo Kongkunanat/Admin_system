@@ -11,7 +11,7 @@ const Data = () =>  {
   const [category, setCategory] = useState([]);
   const [gethabit, setgetHabit] = useState([]);
 
-
+  
 
   let   [catid, setCatid] = useState();
   const [title, setTitle] = useState("");
@@ -20,7 +20,7 @@ const Data = () =>  {
   const [imagefile, setImagefile] = useState(null);
   const [desc, setDesc] = useState("");
   const [benefit, setBenefit] = useState("");
-  let   [habit, setHabit] = useState([]);
+  let   [habit, setHabit] = useState();
 
 
 
@@ -39,9 +39,18 @@ const Data = () =>  {
   const [modal,setmodal] = useState(false);
   
   const [modal2,setmodal2] = useState(false);
-  
-  
 
+  const [search, setSearch] = useState('');
+
+  
+  const [selectedCatid, setSelectedCatid] = useState("");
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedSciname, setSelectedSciname] = useState("");
+  const [selectedCommon, setSelectedCommon] = useState("");
+  const [selectedDesc, setSelectedDesc] = useState("");
+  const [selectedBenefit, setSelectedBenefit] = useState("");
+  const [selectedHabit, setSelectedHabit] = useState("");
+  
 
 
 
@@ -66,18 +75,26 @@ Axios.get('http://localhost:3003/gethabit').then((response)  => {
 
 
 const handleFileChange2 = (event) => {
-  setnewImagefile(event.target.files[0]);
+  const file = event.target.files[0];
+  if (!file) {
+    return;
+  }
+  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+  if (allowedTypes.indexOf(file.type) === -1) {
+    Swal.fire({
+      title: "กรุณาอัพโหลดไฟล์รูปภาพเท่านั้น",
+      text: "รูปแบบ: jpg, jpeg, png",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+    return;
+  }
+  setnewImagefile(file);
 };
 
 
 const handleSubmit2 = async (event) => {
   event.preventDefault();
-  Swal.fire({
-    title: "สำเร็จ",
-    text: "แก้ไขข้อมูลสำเร็จ",
-    icon: "success",
-    confirmButtonText: "สำเร็จ",
-  });
   for( let i =0;i< category.length;i++){
     let result = category[i].cat_title.localeCompare(newcatid);
     if(result===0)
@@ -103,6 +120,19 @@ const handleSubmit2 = async (event) => {
     console.log("no");
    }
  }
+ for( let i =0;i< data.length;i++){
+  let result = data[i].forest_title.localeCompare(newtitle);
+  if(result===0)
+  {
+    Swal.fire({
+      title: "แก้ไขข้อมูลไม่สำเร็จ",
+      text: "ข้อมูลซ้ำ",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+    break;
+  }
+ else if(i===(data.length-1)&&result!==0&&newcatid!==undefined&&newcatid!==''&&newcatid!==null&&newcatid!==""&&newtitle!==''&&newsciname!==''&&newCommon!==''&&newimagefile!==null&&newdesc!==''&&newbenefit!==''&&newhabit!==undefined&&newhabit!==''&&newhabit!==null&&newhabit!==""){
     let formData = new FormData();
     formData.append('newcatid', newcatid);
     formData.append('newtitle',newtitle);
@@ -113,28 +143,158 @@ const handleSubmit2 = async (event) => {
     formData.append('newbenefit', newbenefit);
     formData.append('newhabit', newhabit);
     await Axios.put(`http://localhost:3003/updatedata/${newId}`, formData);
-        setnewCatid('');
-        setnewTitle('');
-        setnewSciname('');
-        setnewCommon ('');
+    Swal.fire({
+      title: "สำเร็จ",
+      text: "แก้ไขข้อมูลสำเร็จ",
+      icon: "success",
+      confirmButtonText: "ตกลง",
+    });
+        setnewCatid("");
+        setnewTitle("");
+        setnewSciname("");
+        setnewCommon("");
         setnewImagefile(null);
-        setnewDesc('');
-        setnewBenefit('');
-        setnewHabit('');
+        setnewDesc("");
+        setnewBenefit("");
+        setnewHabit("");
+        break;
+ }
+}
+        if(newcatid===undefined){
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณาระบุประเภท",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        if(newtitle===''){
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณากรอกชื่อ",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        if(newsciname===''){
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณากรอกชื่อวิทยาศาสตร์",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        if(newCommon===''){
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณากรอกชื่อท้องถิ่น",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        if(newimagefile===null){
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณาเพิ่มไฟล์รูปภาพ",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        if(newdesc===''){
+          console.log(newdesc)
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณากรอกลักษณะทั่วไป",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        if(newbenefit===""){
+          console.log(newbenefit)
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณากรอกประโยชน์",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        if(newhabit===undefined){
+          Swal.fire({
+            title: "แก้ไขข้อมูลไม่สำเร็จ",
+            text: "กรุณาระบุลักษณะวิสัย",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        }
     
 };
 
 
 
 const handleFileChange = (event) => {
-  setImagefile(event.target.files[0]);
+  const file = event.target.files[0];
+  if (!file) {
+    return;
+  }
+  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+  if (allowedTypes.indexOf(file.type) === -1) {
+    Swal.fire({
+      title: "กรุณาอัพโหลดไฟล์รูปภาพเท่านั้น",
+      text: "รูปแบบ: jpg, jpeg, png",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+    return;
+  }
+  setImagefile(file);
 };
 
 
 
-function ClickEditData(id){
-  setmodal2(true)
-  newSetId(id)
+function ClickEditData(id,cattitle,title,sciname,common,desc,benefit,habit){
+  let cattitle2;
+  let habit2;
+  for( let i =0;i< category.length;i++){
+    if(cattitle===category[i].cat_id)
+    {
+      cattitle2=category[i].cat_title;
+     break;
+    }
+    else{
+     console.log("no");
+    }
+  }
+
+  for( let i =0;i< gethabit.length;i++){
+   if(habit===gethabit[i].habit_id)
+   {
+    habit2=gethabit[i].habit_title;
+    break;
+   }
+   else{
+    console.log("no");
+   }
+ }
+  setSelectedCatid(cattitle2);
+  setSelectedTitle(title);
+  setSelectedSciname(sciname);
+  setSelectedCommon(common);
+  setSelectedDesc(desc);
+  setSelectedBenefit(benefit);
+  setSelectedHabit(habit2);
+
+  setnewCatid(cattitle2);
+  setnewTitle(title);
+  setnewSciname(sciname);
+  setnewCommon(common);
+  setnewImagefile(newimagefile);
+  setnewDesc(desc);
+  setnewBenefit(benefit);
+  setnewHabit(habit2);
+
+  setmodal2(true);
+  newSetId(id);
+
 }
 
 
@@ -182,15 +342,15 @@ const handleSubmit = async (event) => {
       setBenefit('');
       setHabit('');
       Swal.fire({
-        title: "ไม่สำเร็จ",
+        title: "เพิ่มข้อมูลไม่สำเร็จ",
         text: "ข้อมูลซ้ำ",
         icon: "error",
         confirmButtonText: "ตกลง",
       });
       break;
     }
-    else if(i===(data.length-1)&&result!==0){
-      console.log("เพิ่มได้");
+    else if(i===(data.length-1)&&result!==0&&catid!==undefined&&catid!==''&&catid!==null&&catid!==""&&title!==''&&sciname!==''&&Common!==''&&imagefile!==null&&desc!==''&&benefit!==''&&habit!==undefined&&habit!==''&&habit!==null&&habit!==""){
+      console.log(habit);
     let formData = new FormData();
     formData.append('catid', catid);
     formData.append('title',title);
@@ -206,7 +366,7 @@ const handleSubmit = async (event) => {
       icon: "success",
       confirmButtonText: "ตกลง",
     });
-    await Axios.post("http://localhost:3003/insertdata", formData);
+    await Axios.post("http://localhost:3003/insertdata", formData); //, { headers: {'Content-Type': 'multipart/form-data'}}
     setCatid('');
     setTitle('');
     setSciname('');
@@ -217,6 +377,71 @@ const handleSubmit = async (event) => {
     setHabit('');
     break;
     }
+  }
+  if(catid===undefined){
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณาระบุประเภท",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  if(title===''){
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณากรอกชื่อ",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  if(sciname===''){
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณากรอกชื่อวิทยาศาสตร์",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  if(Common===''){
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณากรอกชื่อท้องถิ่น",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  if(imagefile===null){
+      console.log(imagefile)
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณาเพิ่มไฟล์รูปภาพ",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  if(desc===''){
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณากรอกลักษณะทั่วไป",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  if(benefit===''){
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณากรอกประโยชน์",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
+  }
+  if(habit===undefined){
+    Swal.fire({
+      title: "เพิ่มข้อมูลไม่สำเร็จ",
+      text: "กรุณาระบุลักษณะวิสัย",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+    });
   }
 
 };
@@ -232,11 +457,12 @@ const deletedata = (id) => {
       })
     );
   });
+  console.log(id)
   Swal.fire({
     title: "สำเร็จ",
     text: "ลบข้อมูลสำเร็จ",
     icon: "success",
-    confirmButtonText: "สำเร็จ",
+    confirmButtonText: "ตกลง",
   });
 };
 
@@ -261,10 +487,11 @@ return (
                                     <label htmlFor='name'>
                                         ประเภท
                                     </label>
-                                          <select
+                                          <select  
                                           class="form-control brand_list" name="e_brand_id"
                                             onChange={e => setCatid(e.target.value)}
                                           >
+                                            <option selected disabled hidden>เลือกประเภท</option>
                                               {category.map((val,i) => {
                                               return(
                                               <option key={i}><td>{val.cat_title}</td></option>
@@ -370,6 +597,7 @@ return (
                                           class="form-control brand_list" name="e_brand_id"
                                             onChange={e =>  setHabit(e.target.value)}
                                           >
+                                            <option selected disabled hidden>เลือกลักษณะวิสัย</option>
                                               {gethabit.map((val,i) => {
                                               return(
                                               <option key={i}><td>{val.habit_title}</td></option>
@@ -387,28 +615,49 @@ return (
   <div className="sell__car">
     <div className="container-fluid">
       <div className="row">
-            <h2>พืช</h2><span>
-            <button  type="button" className="btn btn-success" onClick={()=>setmodal(true)}>เพิ่ม</button></span>
+            <h2>พืช</h2>
+            <form>
+              <label>
+                ค้นหา : </label>
+                <input type="text" name="search"  onChange={(e) => setSearch(e.target.value)}  placeholder='ชื่อ'/>
+            </form>
+              <span>
+                <button  type="button" className="btn btn-success" onClick={()=>setmodal(true)}>
+                  <span class="bi bi-plus">เพิ่ม</span>
+                </button>
+              </span>
       <div className="table-responsive">
         <table  class="table table-striped table-sm">
           <thead>
             <tr>
+            <th>ลำดับ</th>
               <th>ชื่อ</th>
               <th>รูปภาพ</th>
               <th>ประเภท</th>
               <th>จัดการข้อมูล</th>
             </tr>
           </thead>
-       {data.map((val,key) => {
+       {data
+         .filter((item) => {
+          return search.toLowerCase() === ''
+          ? item
+          : item.forest_title.toLowerCase().includes(search);
+         })
+        .map((val,key) => {
           return(
           <tbody id="admin_list">
             <tr>
-              <td>{val.forest_title}</td>
+              <td>{key +1}</td>
+              <td>{val.forest_title}</td>  
               <td>{val.forest_image &&<img  src={`http://localhost:3003/images/${val.forest_image}`} alt=" " style={{ width: '7rem' }}/>}</td>
+              {/* <td>{val.forest_image &&<img  src={`https://virtualgallerymushroom.s3.amazonaws.com/${val.forest_image}`} alt=" " style={{ width: '7rem' }}/>}</td> */}
               <td>{val.cat_title}</td>
-          <div>   
-            <span id="boot-icon" className="btn btn-primary"  onClick={()=>{ClickEditData(val.forest_id)}}><span class="bi bi-pencil-square"></span></span>
-            <button type="button" className="btn btn-danger" onClick={() => {deletedata(val.forest_id)}}><span class="bi bi-trash-fill"></span></button></div>
+          <div className="action">   
+            <button type="button" className="btn btn-primary"  onClick={()=>{ClickEditData(val.forest_id,val.cat_id,val.forest_title,val.forest_sciname,val.forest_Common,val.forest_desc,val.forest_benefit,val.habit_id)}}><span class="bi bi-pencil-square"> แก้ไข</span></button>
+            <button type="button" className="btn btn-danger" onClick={() => {deletedata(val.forest_id)}}>
+              <span class="bi bi-trash-fill"> ลบ</span>
+            </button>
+          </div>
             </tr>
           </tbody>
           );
@@ -418,7 +667,7 @@ return (
     </div>
   </div>
 </div>
-<Modal size='lg'    backdrop="static" isOpen={modal2} toggle={() => setmodal2(!modal2)} >
+<Modal size='lg'    backdrop="static" isOpen={modal2} toggle={() => setmodal2(!modal2)}   >
               <ModalHeader    toggle={() => setmodal2(!modal2)} >  แก้ไขรายละเอียดพืช    </ModalHeader>
                <ModalBody>
                     <form>
@@ -429,12 +678,14 @@ return (
                                         ประเภท
                                     </label>
                                     <select
-                                          class="form-control brand_list" name="e_brand_id"
+                                          class="form-control brand_list" name="e_brand_id" 
                                             onChange={e => setnewCatid(e.target.value)}
+                                            defaultValue={selectedCatid}
                                           >
+                                             <option selected disabled hidden>เลือกประเภท</option>
                                               {category.map((val,i) => {
                                               return(
-                                              <option key={i}><td>{val.cat_title}</td></option>
+                                              <option key={val.i}><td>{val.cat_title}</td></option>
                                               );
                                             })}
                                           </select>
@@ -450,7 +701,7 @@ return (
                                          name="Title"
                                          className='form-control'
                                          placeholder='ชื่อ'
-                                         value={newtitle}
+                                         defaultValue={selectedTitle}
                                          onChange={event => setnewTitle(event.target.value)}
                                           required
                                          />
@@ -466,7 +717,7 @@ return (
                                          name="sciname"
                                          className='form-control'
                                          placeholder='ชื่อวิทยาศาสตร์'
-                                         value={newsciname}
+                                         defaultValue={selectedSciname}
                                          onChange={event => setnewSciname(event.target.value)}
                                           required
                                          />
@@ -482,7 +733,7 @@ return (
                                          name="Common"
                                          className='form-control'
                                          placeholder='ชื่อท้องถิ่น'
-                                         value={newCommon}
+                                         defaultValue={selectedCommon}
                                          onChange={event => setnewCommon(event.target.value)}
                                           required
                                          />
@@ -493,7 +744,7 @@ return (
                                     <label htmlFor='name'>
                                       รูปภาพ <small>(format: jpg, jpeg, png)</small>
                                     </label>
-                                    <input type="file" name="avatar"  onChange={handleFileChange2} class="form-control" required/>
+                                    <input type="file" name="avatar"   onChange={handleFileChange2} class="form-control" required/>
                                 </div>
                             </Col>
                             <Col lg={12}>
@@ -505,7 +756,7 @@ return (
                                          type="text"
                                          name="desc"
                                          className='form-control'
-                                         value={newdesc}
+                                         defaultValue={selectedDesc}
                                          placeholder=''
                                          onChange={event => setnewDesc(event.target.value)}
                                           required
@@ -522,7 +773,7 @@ return (
                                          name="benefit"
                                          className='form-control'
                                          placeholder=''
-                                         value={newbenefit}
+                                         defaultValue={selectedBenefit}
                                          onChange={event => setnewBenefit(event.target.value)}
                                          required
                                          />
@@ -536,7 +787,9 @@ return (
                                     <select
                                           class="form-control brand_list" name="e_brand_id"
                                             onChange={e => setnewHabit(e.target.value)}
+                                            defaultValue={selectedHabit}
                                           >
+                                            <option selected disabled hidden >เลือกลักษณะวิสัย</option>
                                               {gethabit.map((val,i) => {
                                               return(
                                               <option key={i}><td>{val.habit_title}</td></option>
@@ -554,10 +807,3 @@ return (
   );
 };
 export default Data;
-
-
-
-
-
-
-

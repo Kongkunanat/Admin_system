@@ -5,6 +5,11 @@ const navLinks = [
     display: "หน้าหลัก",
   },
   {
+    path: "/admin",
+    icon: "ri-user-fill",
+    display: "เจ้าหน้าที่",
+  },
+  {
     path: "/Category",
     icon: "ri-node-tree",
     display: "ประเภท",

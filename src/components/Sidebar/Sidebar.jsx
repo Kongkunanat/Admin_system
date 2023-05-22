@@ -6,6 +6,10 @@ import "./sidebar.css";
 
 
 const Sidebar = () => {
+  const handleClick=()=>{
+    localStorage.clear();
+    window.location.reload();
+}
   return (
     <div className="sidebar">
       <div className="sidebar__top">
@@ -34,6 +38,11 @@ const Sidebar = () => {
               </li>
             ))}
           </ul>
+        </div>
+        <div className="sidebar__bottom">
+          <span onClick={handleClick}>
+            <i class="ri-logout-circle-r-line" onClick={handleClick}></i> ออกจากระบบ
+          </span>
         </div>
       </div>
     </div>

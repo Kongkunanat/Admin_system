@@ -1,8 +1,8 @@
 .data {
     margin-top: 100px;
   
-    padding: 0px 30px;
-    padding-bottom: 50px;
+    padding: 20px 30px 20 30px;
+    /* padding-bottom: 50px; */
   }
 .data__title {
     font-size: 1.5rem;
@@ -25,3 +25,11 @@
     cursor: pointer;
     margin-bottom: 2rem;
   }
+.table-sm>:not(caption)>*>* {
+    padding: 20px 30px;
+}
+
+.action{
+  padding: 30px;
+}
+
